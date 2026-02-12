@@ -21,6 +21,8 @@ const Register: React.FC = () => {
     experience: 0,
     address: ''
   });
+  const [aadhaarFront, setAadhaarFront] = useState<File | null>(null);
+  const [aadhaarBack, setAadhaarBack] = useState<File | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -50,15 +52,26 @@ const Register: React.FC = () => {
 
     try {
       if (formData.role === 'worker') {
-        // Submit worker application instead of direct registration
-        await submitWorkerApplication({
-          name: formData.name,
-          personalEmail: formData.email,
-          phone: formData.phone,
-          profession: formData.profession,
-          experience: formData.experience,
-          address: formData.address
-        });
+        // Validate Aadhaar uploads
+        if (!aadhaarFront || !aadhaarBack) {
+          setError('Please upload both front and back images of your Aadhaar card');
+          setLoading(false);
+          return;
+        }
+
+        // Create FormData for file upload
+        const submitData = new FormData();
+        submitData.append('name', formData.name);
+        submitData.append('personalEmail', formData.email);
+        submitData.append('phone', formData.phone);
+        submitData.append('profession', formData.profession);
+        submitData.append('experience', formData.experience.toString());
+        submitData.append('address', formData.address);
+        submitData.append('aadhaarFront', aadhaarFront);
+        submitData.append('aadhaarBack', aadhaarBack);
+
+        // Submit worker application with Aadhaar files
+        await submitWorkerApplication(submitData);
         
         // Navigate to pending approval page with email
         navigate(`/worker/pending-approval?email=${encodeURIComponent(formData.email)}`);
@@ -211,6 +224,48 @@ const Register: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     placeholder="Your current address"
                   />
+                </div>
+
+                <div>
+                  <label htmlFor="aadhaarFront" className="block text-sm font-medium text-gray-700">
+                    Aadhaar Card (Front) *
+                  </label>
+                  <input
+                    id="aadhaarFront"
+                    type="file"
+                    required
+                    accept="image/*"
+                    className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setAadhaarFront(e.target.files[0]);
+                      }
+                    }}
+                  />
+                  {aadhaarFront && (
+                    <p className="mt-1 text-sm text-green-600">✓ {aadhaarFront.name}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="aadhaarBack" className="block text-sm font-medium text-gray-700">
+                    Aadhaar Card (Back) *
+                  </label>
+                  <input
+                    id="aadhaarBack"
+                    type="file"
+                    required
+                    accept="image/*"
+                    className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setAadhaarBack(e.target.files[0]);
+                      }
+                    }}
+                  />
+                  {aadhaarBack && (
+                    <p className="mt-1 text-sm text-green-600">✓ {aadhaarBack.name}</p>
+                  )}
                 </div>
               </>
             )}

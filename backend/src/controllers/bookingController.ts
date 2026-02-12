@@ -33,10 +33,19 @@ export const createBooking = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    if (!worker.isOnline || worker.availability.status !== 'available') {
+    // Check if worker is online and verified
+    // Allow booking even if busy - let worker decide to accept/reject
+    if (!worker.isOnline) {
       return res.status(400).json({
         success: false,
-        message: 'Worker is not available'
+        message: 'Worker is currently offline'
+      });
+    }
+
+    if (!worker.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: 'Worker is not verified yet'
       });
     }
 
@@ -141,7 +150,7 @@ export const acceptBooking = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
 
-    const booking = await Booking.findById(id).populate('user worker');
+    const booking = await Booking.findById(id).populate('user');
     if (!booking) {
       return res.status(404).json({
         success: false,
@@ -165,7 +174,9 @@ export const acceptBooking = async (req: AuthRequest, res: Response) => {
       });
     }
     
-    if (booking.worker.toString() !== worker._id.toString()) {
+    // Compare booking worker ID with current worker ID
+    const bookingWorkerId = booking.worker._id || booking.worker;
+    if (bookingWorkerId.toString() !== worker._id.toString()) {
       return res.status(403).json({
         success: false,
         message: 'This booking is not assigned to you'
@@ -184,9 +195,12 @@ export const acceptBooking = async (req: AuthRequest, res: Response) => {
     booking.timeline.accepted = new Date();
     await booking.save();
 
+    // Populate the full booking data for response
+    await booking.populate('user worker');
+
     // Notify user via Socket.io
     const user = await User.findById(booking.user);
-    emitToUser(booking.user.toString(), 'booking:accepted', {
+    emitToUser(booking.user._id.toString(), 'booking:accepted', {
       bookingId: booking._id,
       workerId: worker._id,
       workerName: user?.name,
@@ -197,13 +211,21 @@ export const acceptBooking = async (req: AuthRequest, res: Response) => {
     // Notify admin
     emitToAdmin('booking:status', {
       bookingId: booking._id,
-      status: 'accepted'
+      status: 'accepted',
+      worker: worker.userId,
+      user: booking.user._id
     });
 
     res.status(200).json({
       success: true,
       message: 'Booking accepted successfully',
-      booking
+      booking,
+      userLocation: {
+        address: booking.location.address,
+        coordinates: booking.location.coordinates,
+        latitude: booking.location.coordinates[1],
+        longitude: booking.location.coordinates[0]
+      }
     });
   } catch (error: any) {
     res.status(500).json({
@@ -359,14 +381,24 @@ export const completeBooking = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    if (booking.status !== 'started') {
+    if (booking.status !== 'started' && booking.status !== 'accepted') {
       return res.status(400).json({
         success: false,
-        message: 'Job must be started first'
+        message: 'Booking must be accepted or started first'
       });
     }
 
-    // Update booking
+    // Auto-start if not started yet
+    if (booking.status === 'accepted') {
+      booking.status = 'started';
+      booking.timeline.started = new Date();
+      emitToUser(booking.user.toString(), 'booking:started', {
+        bookingId: booking._id,
+        message: 'Worker has started the work'
+      });
+    }
+
+    // Update booking to completed
     booking.status = 'completed';
     booking.timeline.completed = new Date();
     await booking.save();
@@ -385,6 +417,15 @@ export const completeBooking = async (req: AuthRequest, res: Response) => {
     // Notify worker
     emitToWorker(worker._id.toString(), 'booking:completed', {
       bookingId: booking._id
+    });
+
+    // Notify admin of completion
+    emitToAdmin('booking:completed', {
+      bookingId: booking._id,
+      workerId: worker._id,
+      userId: booking.user,
+      profession: booking.profession,
+      completedAt: booking.timeline.completed
     });
 
     res.status(200).json({
@@ -612,13 +653,6 @@ export const completeWork = async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
     const { otp } = req.body;
 
-    if (!otp) {
-      return res.status(400).json({
-        success: false,
-        message: 'OTP is required'
-      });
-    }
-
     const booking = await Booking.findById(id)
       .populate('user', 'name phone')
       .populate({
@@ -636,23 +670,31 @@ export const completeWork = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    if (booking.status !== 'started') {
+    // Allow completing from accepted or started status
+    if (booking.status !== 'started' && booking.status !== 'accepted') {
       return res.status(400).json({
         success: false,
-        message: 'Work must be started first'
+        message: 'Work must be accepted or started first'
       });
     }
 
-    // Verify OTP
-    if (booking.otp !== otp) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid OTP'
-      });
+    // If OTP provided, verify it
+    if (otp) {
+      if (booking.otp !== otp) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid OTP'
+        });
+      }
+      booking.otpVerified = true;
+    }
+
+    // Auto-start if not started
+    if (booking.status === 'accepted') {
+      booking.timeline.started = new Date();
     }
 
     booking.status = 'completed';
-    booking.otpVerified = true;
     booking.timeline.completed = new Date();
     await booking.save();
 
@@ -669,6 +711,15 @@ export const completeWork = async (req: AuthRequest, res: Response) => {
     emitToUser(booking.user._id.toString(), 'booking:completed', {
       bookingId: booking._id,
       message: 'Work completed. Please proceed with payment.'
+    });
+
+    // Notify admin of completion
+    emitToAdmin('booking:completed', {
+      bookingId: booking._id,
+      workerId: booking.worker,
+      userId: booking.user._id,
+      profession: booking.profession,
+      completedAt: booking.timeline.completed
     });
 
     res.status(200).json({
@@ -738,6 +789,80 @@ export const makePayment = async (req: AuthRequest, res: Response) => {
     res.status(200).json({
       success: true,
       message: 'Payment successful',
+      booking
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+/**
+ * Worker confirms payment received
+ * PATCH /api/bookings/:id/confirm-payment
+ */
+export const confirmPaymentReceived = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const booking = await Booking.findById(id)
+      .populate('user', 'name phone')
+      .populate({
+        path: 'worker',
+        populate: {
+          path: 'userId',
+          select: 'name phone'
+        }
+      });
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found'
+      });
+    }
+
+    // Verify worker owns this booking
+    const worker = await Worker.findOne({ userId: req.user?._id });
+    if (!worker || booking.worker._id.toString() !== worker._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    if (booking.status !== 'completed') {
+      return res.status(400).json({
+        success: false,
+        message: 'Work must be completed first'
+      });
+    }
+
+    // Mark payment as received
+    booking.paymentStatus = 'paid';
+    booking.paymentMethod = booking.paymentMethod || 'cash';
+    await booking.save();
+
+    // Notify user
+    emitToUser(booking.user._id.toString(), 'booking:payment-confirmed', {
+      bookingId: booking._id,
+      message: 'Payment confirmed by worker. Thank you!'
+    });
+
+    // Notify admin
+    emitToAdmin('booking:payment-confirmed', {
+      bookingId: booking._id,
+      workerId: worker._id,
+      userId: booking.user._id,
+      amount: booking.pricing,
+      paymentMethod: booking.paymentMethod
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Payment confirmed successfully',
       booking
     });
   } catch (error: any) {

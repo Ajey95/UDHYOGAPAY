@@ -122,6 +122,27 @@ export const adminService = {
     });
     return response.data;
   },
+
+  /**
+   * Approve worker KYC
+   */
+  approveWorkerKYC: async (workerId: string): Promise<void> => {
+    await api.patch(`/admin/workers/${workerId}/kyc/approve`);
+  },
+
+  /**
+   * Reject worker KYC
+   */
+  rejectWorkerKYC: async (workerId: string, reason: string): Promise<void> => {
+    await api.patch(`/admin/workers/${workerId}/kyc/reject`, { reason });
+  },
+
+  /**
+   * Delete worker from system
+   */
+  deleteWorker: async (workerId: string): Promise<void> => {
+    await api.delete(`/admin/workers/${workerId}`);
+  },
 };
 
 export default adminService;

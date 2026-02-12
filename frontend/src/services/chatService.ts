@@ -51,6 +51,12 @@ export const bookingService = {
     return response.data;
   },
 
+  // Confirm payment received (worker)
+  confirmPayment: async (bookingId: string) => {
+    const response = await api.patch(`/bookings/${bookingId}/confirm-payment`);
+    return response.data;
+  },
+
   // Rate worker
   rateWorker: async (bookingId: string, rating: number, feedback: string) => {
     const response = await api.patch(`/bookings/${bookingId}/rate`, { rating, feedback });

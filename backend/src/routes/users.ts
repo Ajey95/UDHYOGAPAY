@@ -3,13 +3,15 @@ import {
   findNearbyWorkers,
   geocodeAddress,
   reverseGeocode,
-  calculateDistance
+  calculateDistance,
+  getAllOnlineWorkers
 } from '../controllers/userController';
 import { protect } from '../middleware/auth';
 import { isUser } from '../middleware/roleCheck';
 
 const router = express.Router();
 
+router.get('/workers/all-online', protect, isUser, getAllOnlineWorkers);
 router.post('/workers/nearby', protect, isUser, findNearbyWorkers);
 router.post('/geocode', protect, geocodeAddress);
 router.post('/reverse-geocode', protect, reverseGeocode);

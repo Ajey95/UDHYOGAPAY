@@ -8,7 +8,11 @@ export interface IWorkerApplication extends Document {
   experience: number;
   address: string;
   documents: {
-    aadhar?: {
+    aadhaarFront?: {
+      url: string;
+      uploadedAt: Date;
+    };
+    aadhaarBack?: {
       url: string;
       uploadedAt: Date;
     };
@@ -17,6 +21,8 @@ export interface IWorkerApplication extends Document {
       uploadedAt: Date;
     };
   };
+  kycStatus: 'pending' | 'approved' | 'rejected';
+  kycRejectionReason?: string;
   status: 'pending' | 'approved' | 'rejected';
   workEmail?: string; // Admin-provided email like worker1@udhyogapay.com
   userId?: mongoose.Types.ObjectId; // Created after approval
@@ -61,7 +67,11 @@ const WorkerApplicationSchema = new Schema<IWorkerApplication>({
     required: [true, 'Please provide your address']
   },
   documents: {
-    aadhar: {
+    aadhaarFront: {
+      url: String,
+      uploadedAt: Date
+    },
+    aadhaarBack: {
       url: String,
       uploadedAt: Date
     },
@@ -69,6 +79,14 @@ const WorkerApplicationSchema = new Schema<IWorkerApplication>({
       url: String,
       uploadedAt: Date
     }
+  },
+  kycStatus: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
+  },
+  kycRejectionReason: {
+    type: String
   },
   status: {
     type: String,

@@ -23,6 +23,8 @@ export const findMatchingWorkers = async (req: AuthRequest, res: Response) => {
       skills = []
     } = req.body;
 
+    console.log('🔍 Matching Request:', { serviceType, userLocation, maxDistance });
+
     // Validate required fields
     if (!serviceType || !userLocation || !userLocation.latitude || !userLocation.longitude) {
       return res.status(400).json({
@@ -33,8 +35,18 @@ export const findMatchingWorkers = async (req: AuthRequest, res: Response) => {
     // Get all workers of the requested profession
     const workers = await Worker.find({
       profession: new RegExp(serviceType, 'i'),
-      'availability.status': 'available'
+      isOnline: true,
+      isVerified: true,
+      'currentLocation.coordinates.0': { $ne: 0 },
+      'currentLocation.coordinates.1': { $ne: 0 }
     }).populate('userId', 'name email phone profileImage');
+
+    console.log(`✅ Found ${workers.length} online verified workers for ${serviceType}`);
+    
+    // Log worker details for debugging
+    workers.forEach(w => {
+      console.log(`  - Worker: ${(w.userId as any)?.name}, Online: ${w.isOnline}, Verified: ${w.isVerified}, Location: [${w.currentLocation.coordinates}]`);
+    });
 
     if (workers.length === 0) {
       return res.status(404).json({

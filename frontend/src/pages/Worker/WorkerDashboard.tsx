@@ -115,11 +115,25 @@ const WorkerDashboard: React.FC = () => {
         await Notification.requestPermission();
       }
 
+      // Get current location when going online
+      let coordinates = undefined;
+      if (!isOnline && location) {
+        coordinates = [location.longitude, location.latitude];
+      }
+
       const response = await api.patch('/workers/toggle-online', {
-        isOnline: !isOnline
+        isOnline: !isOnline,
+        coordinates
       });
 
       setIsOnline(response.data.isOnline);
+      
+      if (response.data.isOnline) {
+        setAlert({
+          type: 'success',
+          message: '🟢 You are now online and visible to customers!'
+        });
+      }
     } catch (err: any) {
       setAlert({
         type: 'error',

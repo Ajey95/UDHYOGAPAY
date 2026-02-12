@@ -46,10 +46,18 @@ export const bookingService = {
   },
 
   /**
+   * Accept booking (worker)
+   */
+  accept: async (id: string): Promise<Booking> => {
+    const response = await api.patch<ApiResponse<Booking>>(`/bookings/${id}/accept`);
+    return response.data.data!;
+  },
+
+  /**
    * Reject booking (worker)
    */
   reject: async (id: string, reason: string): Promise<Booking> => {
-    const response = await api.put<ApiResponse<Booking>>(`/bookings/${id}/reject`, { reason });
+    const response = await api.patch<ApiResponse<Booking>>(`/bookings/${id}/reject`, { reason });
     return response.data.data!;
   },
 
@@ -104,9 +112,9 @@ export const bookingService = {
   /**
    * Get worker bookings
    */
-  getWorkerBookings: async (params?: any): Promise<Booking[]> => {
-    const response = await api.get('/bookings/worker', { params });
-    return response.data.data;
+  getWorkerBookings: async (params?: any): Promise<any> => {
+    const response = await api.get('/bookings/worker/history', { params });
+    return response.data;
   },
 
   /**

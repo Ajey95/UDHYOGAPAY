@@ -7,7 +7,11 @@ export interface IWorker extends Document {
   isVerified: boolean;
   isOnline: boolean;
   documents: {
-    aadhar?: {
+    aadhaarFront?: {
+      url: string;
+      uploadedAt: Date;
+    };
+    aadhaarBack?: {
       url: string;
       uploadedAt: Date;
     };
@@ -16,6 +20,8 @@ export interface IWorker extends Document {
       uploadedAt: Date;
     };
   };
+  kycStatus: 'pending' | 'approved' | 'rejected';
+  kycRejectionReason?: string;
   rating: number;
   totalJobs: number;
   currentLocation: {
@@ -56,7 +62,11 @@ const WorkerSchema = new Schema<IWorker>({
     default: false
   },
   documents: {
-    aadhar: {
+    aadhaarFront: {
+      url: String,
+      uploadedAt: Date
+    },
+    aadhaarBack: {
       url: String,
       uploadedAt: Date
     },
@@ -64,6 +74,14 @@ const WorkerSchema = new Schema<IWorker>({
       url: String,
       uploadedAt: Date
     }
+  },
+  kycStatus: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
+  },
+  kycRejectionReason: {
+    type: String
   },
   rating: {
     type: Number,

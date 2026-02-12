@@ -23,8 +23,9 @@ export interface ApproveApplicationData {
   workEmail: string;
 }
 
-export const submitWorkerApplication = async (data: WorkerApplicationData) => {
-  const response = await api.post('/worker-applications/submit', data);
+export const submitWorkerApplication = async (data: WorkerApplicationData | FormData) => {
+  const headers = data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {};
+  const response = await api.post('/worker-applications/submit', data, { headers });
   return response.data;
 };
 

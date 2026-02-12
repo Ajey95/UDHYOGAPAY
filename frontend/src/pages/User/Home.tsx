@@ -3,6 +3,7 @@ import { LeafletMap } from '../../components/map/LeafletMap';
 import { Navbar } from '../../components/common/Navbar';
 import { UserActiveBooking } from '../../components/user/ActiveBooking';
 import { useGeolocation } from '../../hooks/useGeolocation';
+import { useToast } from '../../context/ToastContext';
 import { Worker } from '../../types/worker';
 import api from '../../services/api';
 import { matchingService } from '../../services';
@@ -14,14 +15,16 @@ import { Avatar } from '../../components/common/Avatar';
 
 const UserHome: React.FC = () => {
   const { location, error: locationError, loading: locationLoading } = useGeolocation();
+  const { showToast } = useToast();
   const [workers, setWorkers] = useState<Worker[]>([]);
+  const [allWorkers, setAllWorkers] = useState<Worker[]>([]); // Store all workers
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
-  const [profession, setProfession] = useState('plumber');
+  const [profession, setProfession] = useState('all'); // Default to 'all'
   const [routeGeometry, setRouteGeometry] = useState<[number, number][] | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchError, setSearchError] = useState('');
   const [urgency, setUrgency] = useState<'low' | 'medium' | 'high'>('medium');
-  const [maxDistance, setMaxDistance] = useState(25); // km
+  const [maxDistance, setMaxDistance] = useState(100); // km - increased for testing
   const [aiEngineStatus, setAiEngineStatus] = useState<string>('');
   const [activeBooking, setActiveBooking] = useState<any>(null);
   const [checkingBooking, setCheckingBooking] = useState(true);
@@ -31,11 +34,17 @@ const UserHome: React.FC = () => {
     checkActiveBooking();
   }, []);
 
+  // Load all workers initially when location is available
   useEffect(() => {
     if (location) {
-      searchWorkers();
+      loadAllWorkers();
     }
-  }, [location, profession]);
+  }, [location]);
+
+  // Filter workers when profession changes
+  useEffect(() => {
+    filterWorkersByProfession();
+  }, [profession, allWorkers]);
 
   const checkAIEngineStatus = async () => {
     try {
@@ -56,6 +65,39 @@ const UserHome: React.FC = () => {
       console.error('Failed to check active booking:', error);
     } finally {
       setCheckingBooking(false);
+    }
+  };
+
+  // Load all online workers initially
+  const loadAllWorkers = async () => {
+    if (!location) return;
+
+    setLoading(true);
+    setSearchError('');
+
+    try {
+      const response = await api.get('/users/workers/all-online');
+      const loadedWorkers = response.data.workers || [];
+      console.log('📍 Workers loaded:', loadedWorkers.length);
+      setAllWorkers(loadedWorkers);
+      setWorkers(loadedWorkers); // Show all initially
+    } catch (err: any) {
+      console.error('❌ Failed to load workers:', err);
+      setSearchError(err.response?.data?.message || 'Failed to load workers');
+      setAllWorkers([]);
+      setWorkers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter workers by selected profession
+  const filterWorkersByProfession = () => {
+    if (profession === 'all') {
+      setWorkers(allWorkers);
+    } else {
+      const filtered = allWorkers.filter(w => w.profession === profession);
+      setWorkers(filtered);
     }
   };
 
@@ -123,7 +165,13 @@ const UserHome: React.FC = () => {
           maxDistance: maxDistance * 1000 // Convert km to meters
         });
 
-        setWorkers(response.data.workers || []);
+        // Transform fallback API workers to match expected format
+        const fallbackWorkers = (response.data.workers || []).map((w: any) => ({
+          ...w,
+          exactDistance: w.exactDistance || (w.distance ? (w.distance / 1000).toFixed(2) : null)
+        }));
+
+        setWorkers(fallbackWorkers);
       }
     } catch (err: any) {
       setSearchError(err.response?.data?.message || 'Failed to search workers');
@@ -148,22 +196,35 @@ const UserHome: React.FC = () => {
   };
 
   const handleBook = async (workerId: string) => {
-    if (!location) return;
+    if (!location || !selectedWorker) return;
 
     try {
       const response = await api.post('/bookings/create', {
         workerId,
-        profession,
+        profession: selectedWorker.profession, // Use worker's actual profession
         location: {
           coordinates: [location.longitude, location.latitude]
         }
       });
 
-      alert(`Booking created! Show this OTP to the worker: ${response.data.otp}`);
+      showToast({
+        type: 'success',
+        message: `Booking created! OTP: ${response.data.otp}`,
+        duration: 10000
+      });
+      
+      // Clear selection and refresh data
       setSelectedWorker(null);
       setRouteGeometry(null);
+      
+      // Reload to show active booking
+      setTimeout(() => window.location.reload(), 2000);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to create booking');
+      showToast({
+        type: 'error',
+        message: err.response?.data?.message || 'Failed to create booking',
+        duration: 5000
+      });
     }
   };
 
@@ -240,6 +301,7 @@ const UserHome: React.FC = () => {
             onChange={(e) => setProfession(e.target.value)}
             className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
+            <option value="all">📍 All Workers</option>
             {PROFESSIONS.map((prof) => (
               <option key={prof.value} value={prof.value}>
                 {prof.icon} {prof.label}
@@ -290,8 +352,8 @@ const UserHome: React.FC = () => {
         )}
 
         <div className="mt-3 text-sm text-gray-700 bg-blue-50 p-2 rounded-lg">
-          Found <span className="font-bold text-blue-600 text-lg">{workers.length}</span> {profession}s
-          {workers.length > 0 && <span className="text-xs ml-2 text-purple-600">(sorted by AI match score)</span>}
+          Found <span className="font-bold text-blue-600 text-lg">{workers.length}</span> {profession === 'all' ? 'workers' : profession + 's'}
+          {workers.length > 0 && profession !== 'all' && <span className="text-xs ml-2 text-purple-600">(filtered)</span>}
         </div>
       </div>
 
@@ -301,6 +363,7 @@ const UserHome: React.FC = () => {
         zoom={13}
         workers={workers}
         onWorkerClick={handleWorkerClick}
+        onBookWorker={handleBook}
         userLocation={[location.latitude, location.longitude]}
         routeCoordinates={routeGeometry || undefined}
       />
@@ -345,14 +408,20 @@ const UserHome: React.FC = () => {
               <div className="bg-blue-50 p-3 rounded-lg">
                 <p className="text-xs text-gray-600">Distance</p>
                 <p className="text-lg font-bold text-blue-600">
-                  {selectedWorker.exactDistance || 'N/A'} km
+                  {selectedWorker.exactDistance 
+                    ? `${selectedWorker.exactDistance} km`
+                    : selectedWorker.distance
+                    ? `${(selectedWorker.distance / 1000).toFixed(2)} km`
+                    : 'N/A'}
                 </p>
               </div>
 
               <div className="bg-green-50 p-3 rounded-lg">
                 <p className="text-xs text-gray-600">ETA</p>
                 <p className="text-lg font-bold text-green-600">
-                  ~{selectedWorker.estimatedTime || 'N/A'} mins
+                  ~{selectedWorker.estimatedTime 
+                    ? `${selectedWorker.estimatedTime} mins`
+                    : 'N/A'}
                 </p>
               </div>
             </div>

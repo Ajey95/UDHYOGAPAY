@@ -138,7 +138,15 @@ export const UserActiveBooking: React.FC<ActiveBookingProps> = ({ booking, onUpd
               {/* Location */}
               <div className="bg-gray-50 p-4 rounded-xl border-2 border-gray-200">
                 <p className="text-sm text-gray-600 mb-2">📍 Service Location</p>
-                <p className="text-sm text-gray-800">{booking.location?.address || 'Location'}</p>
+                <p className="text-sm text-gray-800 mb-3">{booking.location?.address || 'Location'}</p>
+                <a
+                  href={`https://www.google.com/maps?q=${booking.location?.coordinates[1]},${booking.location?.coordinates[0]}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold text-sm transition-all w-full"
+                >
+                  🗺️ View Location on Map
+                </a>
               </div>
             </div>
 

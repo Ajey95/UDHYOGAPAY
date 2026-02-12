@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -78,6 +78,7 @@ interface LeafletMapProps {
   zoom?: number;
   workers?: Worker[];
   onWorkerClick?: (worker: Worker) => void;
+  onBookWorker?: (workerId: string) => void;
   userLocation?: [number, number];
   routeCoordinates?: [number, number][];
   height?: string;
@@ -88,6 +89,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
   zoom = 13,
   workers = [],
   onWorkerClick,
+  onBookWorker,
   userLocation,
   routeCoordinates,
   height = '100vh'
@@ -119,7 +121,18 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
 
       {/* Worker Markers */}
       {workers.map((worker) => {
+        // Add safety checks
+        if (!worker.currentLocation || !worker.currentLocation.coordinates) {
+          console.warn('Worker missing location:', worker._id);
+          return null;
+        }
+
         const coords = worker.currentLocation.coordinates;
+        if (!coords || coords.length !== 2 || coords[0] === 0 || coords[1] === 0) {
+          console.warn('Worker has invalid coordinates:', worker._id, coords);
+          return null;
+        }
+
         const position: [number, number] = [coords[1], coords[0]]; // Swap lon/lat to lat/lon
 
         return (
@@ -132,29 +145,60 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
             }}
           >
             <Popup>
-              <div className="p-2 min-w-[200px]">
-                <h3 className="font-bold text-lg">
-                  {worker.userDetails?.name || worker.userId.name}
-                </h3>
-                <p className="text-sm text-gray-600 capitalize">{worker.profession}</p>
-                <div className="flex items-center gap-1 mt-1">
+              <div className="p-3 min-w-[220px]">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h3 className="font-bold text-lg text-gray-800">
+                      {worker.userDetails?.name || worker.userId.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 capitalize font-medium">{worker.profession}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                      🟢 Online
+                    </span>
+                    {typeof worker.availability === 'object' && worker.availability.status === 'busy' && (
+                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">
+                        ⚠️ Busy
+                      </span>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-1 mb-2">
                   <span className="text-yellow-500">⭐</span>
                   <span className="font-semibold">{worker.rating.toFixed(1)}</span>
                   <span className="text-xs text-gray-500">({worker.totalJobs} jobs)</span>
                 </div>
-                {worker.exactDistance && (
-                  <p className="text-sm mt-1">
-                    📍 {worker.exactDistance} km away
+                
+                <div className="space-y-1 mb-3">
+                  {worker.exactDistance && (
+                    <p className="text-sm text-gray-700">
+                      📍 <span className="font-medium">{worker.exactDistance} km</span> away
+                    </p>
+                  )}
+                  {worker.estimatedTime && (
+                    <p className="text-sm text-gray-700">
+                      ⏱️ ~<span className="font-medium">{worker.estimatedTime} mins</span> arrival
+                    </p>
+                  )}
+                  <p className="text-sm text-gray-700">
+                    💼 <span className="font-medium">{worker.experience} years</span> experience
                   </p>
+                </div>
+                
+                {onBookWorker && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onBookWorker(worker._id);
+                    }}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                  >
+                    <span>📞</span>
+                    Book Now
+                  </button>
                 )}
-                {worker.estimatedTime && (
-                  <p className="text-sm">
-                    ⏱️ ~{worker.estimatedTime} mins
-                  </p>
-                )}
-                <p className="text-xs text-gray-500 mt-1">
-                  Experience: {worker.experience} years
-                </p>
               </div>
             </Popup>
           </Marker>

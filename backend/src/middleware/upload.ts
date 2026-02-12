@@ -39,3 +39,9 @@ export const uploadKYC = upload.fields([
   { name: 'aadhar', maxCount: 1 },
   { name: 'policeVerification', maxCount: 1 }
 ]);
+
+// Upload Aadhaar for worker registration
+export const uploadAadhaar = upload.fields([
+  { name: 'aadhaarFront', maxCount: 1 },
+  { name: 'aadhaarBack', maxCount: 1 }
+]);

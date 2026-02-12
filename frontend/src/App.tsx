@@ -14,9 +14,12 @@ import Register from './pages/Auth/Register';
 
 // User Pages
 import UserHome from './pages/User/Home';
+import UserDashboard from './pages/User/Dashboard';
+import UserProfile from './pages/User/Profile';
 
 // Worker Pages
-import WorkerDashboard from './pages/Worker/WorkerDashboard';
+import WorkerDashboardNew from './pages/Worker/DashboardNew';
+import WorkerProfile from './pages/Worker/Profile';
 import WorkerOnboarding from './pages/Worker/Onboarding';
 import PendingApproval from './pages/Worker/PendingApproval';
 
@@ -24,7 +27,7 @@ import PendingApproval from './pages/Worker/PendingApproval';
 import AdminPanel from './pages/Admin/AdminPanel';
 
 // Public Pages
-import Landing from './pages/Landing';
+import LandingNew from './pages/LandingNew';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
@@ -44,7 +47,7 @@ const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   if (isAuthenticated && user) {
     // Redirect based on user role
     if (user.role === 'user') {
-      return <Navigate to="/user/home" replace />;
+      return <Navigate to="/user/dashboard" replace />;
     } else if (user.role === 'worker') {
       return <Navigate to="/worker/dashboard" replace />;
     } else if (user.role === 'admin') {
@@ -66,7 +69,7 @@ function App() {
                 <div className="min-h-screen bg-gray-50">
                   <Routes>
                     {/* Public Routes */}
-                    <Route path="/" element={<Landing />} />
+                    <Route path="/" element={<LandingNew />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
                     
@@ -86,13 +89,37 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
+                    <Route
+                      path="/user/dashboard"
+                      element={
+                        <ProtectedRoute allowedRoles={['user']}>
+                          <UserDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/user/profile"
+                      element={
+                        <ProtectedRoute allowedRoles={['user']}>
+                          <UserProfile />
+                        </ProtectedRoute>
+                      }
+                    />
 
                     {/* Worker Routes */}
                     <Route
                       path="/worker/dashboard"
                       element={
                         <ProtectedRoute allowedRoles={['worker']}>
-                          <WorkerDashboard />
+                          <WorkerDashboardNew />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/worker/profile"
+                      element={
+                        <ProtectedRoute allowedRoles={['worker']}>
+                          <WorkerProfile />
                         </ProtectedRoute>
                       }
                     />

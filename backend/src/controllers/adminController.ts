@@ -256,3 +256,113 @@ export const getAllBookings = async (req: AuthRequest, res: Response) => {
     });
   }
 };
+
+/**
+ * Approve worker KYC
+ * PATCH /api/admin/workers/:id/kyc/approve
+ */
+export const approveWorkerKYC = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const worker = await Worker.findById(id);
+    if (!worker) {
+      return res.status(404).json({
+        success: false,
+        message: 'Worker not found'
+      });
+    }
+
+    worker.kycStatus = 'approved';
+    worker.kycRejectionReason = undefined;
+    await worker.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Worker KYC approved successfully',
+      worker
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+/**
+ * Reject worker KYC
+ * PATCH /api/admin/workers/:id/kyc/reject
+ */
+export const rejectWorkerKYC = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    if (!reason) {
+      return res.status(400).json({
+        success: false,
+        message: 'Rejection reason is required'
+      });
+    }
+
+    const worker = await Worker.findById(id);
+    if (!worker) {
+      return res.status(404).json({
+        success: false,
+        message: 'Worker not found'
+      });
+    }
+
+    worker.kycStatus = 'rejected';
+    worker.kycRejectionReason = reason;
+    await worker.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Worker KYC rejected',
+      worker
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+/**
+ * Delete worker from system
+ * DELETE /api/admin/workers/:id
+ */
+export const deleteWorker = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const worker = await Worker.findById(id);
+    if (!worker) {
+      return res.status(404).json({
+        success: false,
+        message: 'Worker not found'
+      });
+    }
+
+    // Delete the worker
+    await Worker.findByIdAndDelete(id);
+
+    // Optionally, also delete the associated User account
+    if (worker.userId) {
+      await User.findByIdAndDelete(worker.userId);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Worker deleted successfully'
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

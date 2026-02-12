@@ -5,6 +5,7 @@ import Worker from '../models/Worker';
 import { AuthRequest } from '../middleware/auth';
 import crypto from 'crypto';
 import { sendWorkerCredentialsEmail, sendApplicationRejectionEmail } from '../services/emailService';
+import cloudinary from '../config/cloudinary';
 
 /**
  * Submit worker application
@@ -12,7 +13,8 @@ import { sendWorkerCredentialsEmail, sendApplicationRejectionEmail } from '../se
  */
 export const submitWorkerApplication = async (req: Request, res: Response) => {
   try {
-    const { name, personalEmail, phone, profession, experience, address, documents } = req.body;
+    const { name, personalEmail, phone, profession, experience, address } = req.body;
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
     // Check if application already exists
     const existingApplication = await WorkerApplication.findOne({
@@ -34,6 +36,29 @@ export const submitWorkerApplication = async (req: Request, res: Response) => {
       }
     }
 
+    // Upload Aadhaar images to Cloudinary
+    const documents: any = {};
+    
+    if (files && files.aadhaarFront) {
+      const aadhaarFrontResult = await cloudinary.uploader.upload(files.aadhaarFront[0].path, {
+        folder: 'udhyogapay/kyc/aadhaar-front'
+      });
+      documents.aadhaarFront = {
+        url: aadhaarFrontResult.secure_url,
+        uploadedAt: new Date()
+      };
+    }
+
+    if (files && files.aadhaarBack) {
+      const aadhaarBackResult = await cloudinary.uploader.upload(files.aadhaarBack[0].path, {
+        folder: 'udhyogapay/kyc/aadhaar-back'
+      });
+      documents.aadhaarBack = {
+        url: aadhaarBackResult.secure_url,
+        uploadedAt: new Date()
+      };
+    }
+
     // Create worker application
     const application = await WorkerApplication.create({
       name,
@@ -43,7 +68,8 @@ export const submitWorkerApplication = async (req: Request, res: Response) => {
       experience,
       address,
       documents,
-      status: 'pending'
+      status: 'pending',
+      kycStatus: 'pending'
     });
 
     res.status(201).json({
@@ -51,7 +77,8 @@ export const submitWorkerApplication = async (req: Request, res: Response) => {
       message: 'Application submitted successfully. You will receive an email once approved.',
       application: {
         id: application._id,
-        status: application.status
+        status: application.status,
+        kycStatus: application.kycStatus
       }
     });
   } catch (error: any) {

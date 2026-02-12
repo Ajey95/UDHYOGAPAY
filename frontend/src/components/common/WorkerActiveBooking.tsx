@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Chat } from '../common/Chat';
 import { bookingService } from '../../services/chatService';
+import { bookingService as mainBookingService } from '../../services/bookingService';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { Alert } from '../common/Alert';
 
@@ -34,6 +35,35 @@ export const WorkerActiveBooking: React.FC<WorkerActiveBookingProps> = ({ bookin
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
+  const handleAcceptBooking = async () => {
+    setLoading(true);
+    try {
+      await mainBookingService.accept(booking._id);
+      setAlert({ type: 'success', message: 'Booking accepted! Navigate to customer location.' });
+      setTimeout(() => onUpdate(), 1500);
+    } catch (error: any) {
+      setAlert({ type: 'error', message: error.response?.data?.message || 'Failed to accept booking' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRejectBooking = async () => {
+    const reason = prompt('Why are you rejecting this booking?');
+    if (!reason) return;
+
+    setLoading(true);
+    try {
+      await mainBookingService.reject(booking._id, reason);
+      setAlert({ type: 'success', message: 'Booking rejected successfully.' });
+      setTimeout(() => onUpdate(), 1500);
+    } catch (error: any) {
+      setAlert({ type: 'error', message: error.response?.data?.message || 'Failed to reject booking' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleStartWork = async () => {
     setLoading(true);
     try {
@@ -61,6 +91,22 @@ export const WorkerActiveBooking: React.FC<WorkerActiveBookingProps> = ({ bookin
       onUpdate();
     } catch (error: any) {
       setAlert({ type: 'error', message: error.response?.data?.message || 'Invalid OTP or failed to complete' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleConfirmPayment = async () => {
+    const confirmAction = window.confirm('Have you received the payment from the customer?');
+    if (!confirmAction) return;
+
+    setLoading(true);
+    try {
+      await bookingService.confirmPayment(booking._id);
+      setAlert({ type: 'success', message: 'Payment confirmed! Job completed successfully.' });
+      setTimeout(() => onUpdate(), 1500);
+    } catch (error: any) {
+      setAlert({ type: 'error', message: error.response?.data?.message || 'Failed to confirm payment' });
     } finally {
       setLoading(false);
     }
@@ -146,15 +192,25 @@ export const WorkerActiveBooking: React.FC<WorkerActiveBookingProps> = ({ bookin
             {/* Location */}
             <div className="bg-gray-50 p-4 rounded-xl border-2 border-gray-200">
               <p className="text-sm text-gray-600 mb-2">📍 Service Location</p>
-              <p className="text-sm text-gray-800">{booking.location?.address || 'Location'}</p>
-              <a
-                href={`https://www.google.com/maps?q=${booking.location?.coordinates[1]},${booking.location?.coordinates[0]}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-2 text-blue-600 hover:text-blue-700 font-semibold text-sm"
-              >
-                🗺️ Open in Maps →
-              </a>
+              <p className="text-sm text-gray-800 mb-3">{booking.location?.address || 'Location'}</p>
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href={`https://www.google.com/maps?q=${booking.location?.coordinates[1]},${booking.location?.coordinates[0]}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold text-sm transition-all"
+                >
+                  🗺️ View on Map
+                </a>
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${booking.location?.coordinates[1]},${booking.location?.coordinates[0]}&travelmode=driving`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-sm transition-all"
+                >
+                  🧭 Navigate
+                </a>
+              </div>
             </div>
           </div>
 
@@ -192,6 +248,25 @@ export const WorkerActiveBooking: React.FC<WorkerActiveBookingProps> = ({ bookin
             </div>
 
             {/* Action Buttons */}
+            {booking.status === 'pending' && (
+              <div className="space-y-3">
+                <button
+                  onClick={handleAcceptBooking}
+                  disabled={loading}
+                  className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-bold text-lg hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 shadow-lg transform hover:scale-105 transition-all"
+                >
+                  {loading ? <LoadingSpinner /> : '✅ Accept Booking'}
+                </button>
+                <button
+                  onClick={handleRejectBooking}
+                  disabled={loading}
+                  className="w-full py-4 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl font-bold text-lg hover:from-red-600 hover:to-pink-600 disabled:opacity-50 shadow-lg transform hover:scale-105 transition-all"
+                >
+                  {loading ? <LoadingSpinner /> : '❌ Reject Booking'}
+                </button>
+              </div>
+            )}
+
             {booking.status === 'accepted' && (
               <button
                 onClick={handleStartWork}
@@ -225,10 +300,19 @@ export const WorkerActiveBooking: React.FC<WorkerActiveBookingProps> = ({ bookin
             )}
 
             {booking.status === 'completed' && booking.paymentStatus === 'pending' && (
-              <div className="bg-yellow-50 p-4 rounded-xl border-2 border-yellow-300 text-center">
-                <p className="text-2xl mb-2">⏳</p>
-                <p className="font-bold text-gray-800">Waiting for customer payment...</p>
-                <p className="text-sm text-gray-600 mt-1">Amount: ₹{booking.pricing}</p>
+              <div className="space-y-3">
+                <div className="bg-yellow-50 p-4 rounded-xl border-2 border-yellow-300 text-center">
+                  <p className="text-2xl mb-2">⏳</p>
+                  <p className="font-bold text-gray-800">Waiting for customer payment...</p>
+                  <p className="text-sm text-gray-600 mt-1">Amount: ₹{booking.pricing}</p>
+                </div>
+                <button
+                  onClick={handleConfirmPayment}
+                  disabled={loading}
+                  className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold text-lg hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 shadow-lg transform hover:scale-105 transition-all"
+                >
+                  {loading ? <LoadingSpinner /> : '✅ Payment Done'}
+                </button>
               </div>
             )}
 

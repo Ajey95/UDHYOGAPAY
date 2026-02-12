@@ -5,7 +5,10 @@ import {
   getActiveWorkers,
   getAllWorkers,
   getAnalytics,
-  getAllBookings
+  getAllBookings,
+  approveWorkerKYC,
+  rejectWorkerKYC,
+  deleteWorker
 } from '../controllers/adminController';
 import { protect } from '../middleware/auth';
 import { isAdmin } from '../middleware/roleCheck';
@@ -18,6 +21,9 @@ router.use(isAdmin);
 
 router.get('/workers/pending', getPendingWorkers);
 router.patch('/workers/:id/verify', verifyWorker);
+router.patch('/workers/:id/kyc/approve', approveWorkerKYC);
+router.patch('/workers/:id/kyc/reject', rejectWorkerKYC);
+router.delete('/workers/:id', deleteWorker);
 router.get('/workers/active', getActiveWorkers);
 router.get('/workers', getAllWorkers);
 router.get('/analytics', getAnalytics);

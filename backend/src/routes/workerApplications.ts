@@ -8,11 +8,12 @@ import {
 } from '../controllers/workerApplicationController';
 import { protect } from '../middleware/auth';
 import { isAdmin } from '../middleware/roleCheck';
+import { uploadAadhaar } from '../middleware/upload';
 
 const router = express.Router();
 
 // Public routes
-router.post('/submit', submitWorkerApplication);
+router.post('/submit', uploadAadhaar, submitWorkerApplication);
 router.post('/check-status', checkApplicationStatus);
 
 // Admin routes

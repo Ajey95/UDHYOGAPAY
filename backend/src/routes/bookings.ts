@@ -13,7 +13,8 @@ import {
   completeWork,
   makePayment,
   getUserActiveBooking,
-  getWorkerActiveBooking
+  getWorkerActiveBooking,
+  confirmPaymentReceived
 } from '../controllers/bookingController';
 import { protect } from '../middleware/auth';
 import { isUser, isWorker } from '../middleware/roleCheck';
@@ -33,6 +34,7 @@ router.patch('/:id/reject', protect, isWorker, rejectBooking);
 router.post('/:id/verify-otp', protect, isWorker, verifyOTPAndStart);
 router.patch('/:id/start', protect, isWorker, startWork);
 router.patch('/:id/complete', protect, isWorker, completeWork);
+router.patch('/:id/confirm-payment', protect, isWorker, confirmPaymentReceived);
 router.get('/worker/history', protect, isWorker, getWorkerBookings);
 router.get('/active/worker', protect, isWorker, getWorkerActiveBooking);
 

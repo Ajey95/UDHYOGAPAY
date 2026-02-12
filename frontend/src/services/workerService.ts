@@ -58,7 +58,52 @@ export const workerService = {
    * Toggle availability
    */
   toggleAvailability: async (available: boolean): Promise<void> => {
-    await api.put('/workers/availability', { available });
+    // Get current location
+    let coordinates: [number, number] | undefined;
+    
+    if (available && navigator.geolocation) {
+      try {
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          });
+        });
+        coordinates = [position.coords.longitude, position.coords.latitude];
+        console.log('📍 Location captured:', coordinates);
+      } catch (error: any) {
+        console.error('Error getting location:', error);
+        if (error.code === 1) {
+          throw new Error('Location permission denied. Please enable location access in your browser settings.');
+        } else if (error.code === 2) {
+          throw new Error('Location unavailable. Please check your GPS settings.');
+        } else if (error.code === 3) {
+          throw new Error('Location request timed out. Please try again.');
+        } else {
+          throw new Error('Failed to get location. Please enable location services.');
+        }
+      }
+    }
+
+    if (available && !coordinates) {
+      throw new Error('Location is required to go online. Please enable location access.');
+    }
+
+    const response = await api.patch('/workers/toggle-online', { 
+      isOnline: available,
+      coordinates 
+    });
+    
+    console.log('✅ Toggle online response:', response.data);
+  },
+
+  /**
+   * Get current worker's profile
+   */
+  getProfile: async (): Promise<Worker> => {
+    const response = await api.get('/workers/profile');
+    return response.data.worker;
   },
 
   /**

@@ -27,6 +27,7 @@ export interface Booking {
   estimatedDistance: number;
   estimatedTime: number;
   pricing: number;
+  paymentStatus?: 'pending' | 'paid' | 'failed';
   timeline: {
     requested?: string;
     accepted?: string;
