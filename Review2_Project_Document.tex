@@ -1,0 +1,788 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{fancyhdr}
+
+% Define colors
+\definecolor{headerblue}{RGB}{51,102,153}
+\definecolor{lightgray}{RGB}{240,240,240}
+
+% Page style
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Review 2 - Project Document \#2}
+\fancyhead[R]{\small TEAM\_02\_27\_12\_2025}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+\centering
+\vspace*{1cm}
+
+{\Huge \textbf{Review 2}}\\[0.5cm]
+{\LARGE \textbf{Project Document \#2}}\\[2cm]
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.8}
+\begin{tabularx}{0.9\textwidth}{|>{\hsize=0.8\hsize}X|>{\hsize=1.2\hsize}X|}
+\hline
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{Field}} & \textcolor{white}{\textbf{Details}} \\
+\hline
+\textbf{Team Name} & TEAM\_02\_27\_12\_2025 (1) \\
+\hline
+\textbf{Guide} & T. Senthil Kumar \\
+\hline
+\textbf{Submission Date} & 1 March 2026, 11:00 PM \\
+\hline
+\end{tabularx}
+\end{table}
+
+\vspace{1cm}
+
+{\Large \textbf{Team Members}}\\[0.5cm]
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{0.9\textwidth}{|c|X|X|}
+\hline
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{S.No}} & \textcolor{white}{\textbf{Name}} & \textcolor{white}{\textbf{Registration Number}} \\
+\hline
+1 & Rohith Kumar D & CB.SC.U4CSE23018 \\
+\hline
+2 & T. Venkataramana & CB.SC.U4CSE23055 \\
+\hline
+3 & VAB Jashwanth Reddy & CB.SC.U4CSE23058 \\
+\hline
+4 & C. Kalyan Kumar Reddy & CB.SC.U4CSE23060 \\
+\hline
+\end{tabularx}
+\end{table}
+
+\vfill
+
+\end{titlepage}
+
+\newpage
+\setcounter{page}{1}
+\tableofcontents
+\newpage
+
+\section*{Project Information}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{2.0}
+\begin{tabularx}{\textwidth}{|>{\columncolor{lightgray}\bfseries\raggedright\arraybackslash}p{4.5cm}|X|}
+\hline
+\rowcolor{headerblue}
+\multicolumn{2}{|c|}{\textcolor{white}{\Large\textbf{PROJECT DETAILS}}} \\
+\hline
+Project Name & Udhyogapay - On-Demand Service Worker Platform \\
+\hline
+Name of Module & Booking Management System \\
+\hline
+Module Description (including visualization, reports, API) & This module handles the complete lifecycle of service bookings in the Udhyogapay platform. It provides functionality for users to create bookings, workers to accept/reject requests, track booking status, manage payments, and display real-time location-based matching. 
+
+\textbf{Key Features:}
+\begin{itemize}
+\item REST APIs for all CRUD operations
+\item Real-time notifications via Socket.IO
+\item Interactive map visualization using OpenStreetMap
+\item Comprehensive grid-based data display using Material-UI
+\item Distance-based pricing calculations
+\end{itemize}
+
+\textbf{Reports Generated:}
+\begin{itemize}
+\item Booking history and status reports
+\item Payment tracking and transaction summaries
+\item Worker performance metrics
+\item Location-based analytics
+\end{itemize} \\
+\hline
+\end{tabularx}
+\end{table}
+
+\newpage
+\section*{List of Forms}
+
+\begin{longtable}{|>{\centering\arraybackslash}p{1cm}|p{4.5cm}|p{5.5cm}|p{3.5cm}|}
+\hline
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{S.No}} & \textcolor{white}{\textbf{Form Name}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Types of CRUD Operations}} \\
+\hline
+\endfirsthead
+
+\hline
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{S.No}} & \textcolor{white}{\textbf{Form Name}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Types of CRUD Operations}} \\
+\hline
+\endhead
+
+\hline
+\multicolumn{4}{r}{\textit{Continued on next page...}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+\rowcolor{lightgray}
+\textbf{1} & Booking Management Form & Comprehensive form to manage service bookings with features for creating new bookings, viewing booking details in grid view, updating booking status, searching by booking ID, and canceling bookings. Includes real-time worker matching and OTP verification. & \textbf{Insert} \newline \textbf{Delete} \newline \textbf{Search} \newline \textbf{Display} \newline \textbf{Update} \\
+\hline
+\textbf{2} & Worker Profile Management Form & Form to manage worker registration, KYC document uploads, profile updates, location tracking, and availability status management. Displays worker performance metrics in grid format. & \textbf{Insert} \newline \textbf{Display} \newline \textbf{Update} \newline \textbf{Search} \\
+\hline
+\rowcolor{lightgray}
+\textbf{3} & User Management Form & Administrative form to view and manage user accounts, track user locations, view booking history, and manage user roles and permissions. Grid-based interface with sorting capabilities. & \textbf{Display} \newline \textbf{Update} \newline \textbf{Search} \newline \textbf{Delete} \\
+\hline
+\textbf{4} & Complaint Management Form & Form accessible from User and Worker panels to file complaints about bookings or services. Admin can view, filter, and resolve complaints with status tracking. Includes complaint type selection, detailed description, and resolution workflow. & \textbf{Insert} \newline \textbf{Display} \newline \textbf{Update} \newline \textbf{Search} \newline \textbf{Delete} \\
+\hline
+\rowcolor{lightgray}
+\textbf{5} & Review \& Rating Form & Post-completion form shown to users with 1-5 star rating system, good attributes selection, improvement suggestions, and detailed comments. Reviews are visible in user, worker, and admin panels for quality monitoring. & \textbf{Insert} \newline \textbf{Display} \newline \textbf{Search} \\
+\hline
+\textbf{6} & Account Deletion Management Form & Admin-only form displaying all user and worker accounts in a searchable data grid with deletion functionality. Includes confirmation dialogs, mandatory reason logging, and audit trail for compliance. & \textbf{Display} \newline \textbf{Delete} \newline \textbf{Search} \\
+\hline
+\end{longtable}
+
+\newpage
+\section*{List of Tables}
+
+\begin{longtable}{|>{\centering\arraybackslash}p{1cm}|p{3.5cm}|p{4.5cm}|p{6cm}|}
+\hline
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{S.No}} & \textcolor{white}{\textbf{Table Name}} & \textcolor{white}{\textbf{Associated Form Name}} & \textcolor{white}{\textbf{Description}} \\
+\hline
+\endfirsthead
+
+\hline
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{S.No}} & \textcolor{white}{\textbf{Table Name}} & \textcolor{white}{\textbf{Associated Form Name}} & \textcolor{white}{\textbf{Description}} \\
+\hline
+\endhead
+
+\hline
+\multicolumn{4}{r}{\textit{Continued on next page...}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+\rowcolor{lightgray}
+\textbf{1} & \texttt{bookings} & Booking Management Form & Stores all booking records including:
+\begin{itemize}
+\item user reference (\textbf{FK $\rightarrow$ users.\_id})
+\item worker reference (\textbf{FK $\rightarrow$ workers.\_id})
+\item profession, description, location coordinates (GeoJSON)
+\item status, OTP, pricing, payment details
+\item timeline with timestamps
+\end{itemize}
+Contains nested operations with users and workers tables via ObjectId references. \\
+\hline
+
+\textbf{2} & \texttt{workers} & Worker Profile Management Form & Stores worker profile information:
+\begin{itemize}
+\item userId (\textbf{FK $\rightarrow$ users.\_id}) - UNIQUE
+\item profession, experience
+\item verification status, documents (nested object)
+\item KYC status, rating, total jobs
+\item currentLocation (GeoJSON Point with 2dsphere index)
+\end{itemize}
+Related to users table via userId field with cascading updates. \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{3} & \texttt{users} & User Management Form, Worker Profile Management Form, Booking Management Form & Main user authentication table:
+\begin{itemize}
+\item name, email (UNIQUE), phone (UNIQUE)
+\item password (bcrypt hashed), role enum
+\item location (GeoJSON Point)
+\item resetPasswordToken, timestamps
+\end{itemize}
+\textbf{Parent table} referenced by bookings and workers tables. Implements pre-save hooks for password hashing. \\
+\hline
+
+\textbf{4} & \texttt{messages} & Chat/Messaging Form & Stores real-time chat messages:
+\begin{itemize}
+\item sender (\textbf{FK $\rightarrow$ users.\_id})
+\item receiver (\textbf{FK $\rightarrow$ users.\_id})
+\item booking (\textbf{FK $\rightarrow$ bookings.\_id})
+\item message content, timestamp
+\item read status, delivered status
+\end{itemize}
+Implements nested operations with users and bookings tables for communication tracking. \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{5} & \texttt{workerapplications} & Worker Application Form & Stores worker registration applications:
+\begin{itemize}
+\item userId (\textbf{FK $\rightarrow$ users.\_id})
+\item profession, experience
+\item documents (Aadhaar, Police Verification)
+\item applicationStatus (pending/approved/rejected)
+\item adminNotes, reviewedBy, reviewedAt
+\end{itemize}
+Related to users table. Upon approval, creates corresponding worker entry. \\
+\hline
+
+\textbf{6} & \texttt{reviews} & Review \& Rating Form & Stores customer reviews and ratings after job completion:
+\begin{itemize}
+\item booking (\textbf{FK $\rightarrow$ bookings.\_id}) - UNIQUE
+\item user (\textbf{FK $\rightarrow$ users.\_id})
+\item worker (\textbf{FK $\rightarrow$ workers.\_id})
+\item rating (1-5 stars), goodAttributes, whatToImprove
+\item reviewComment, serviceQuality, punctuality, cleanliness
+\item status (pending/approved/rejected), moderatedBy
+\end{itemize}
+Implements nested operations with bookings, users, and workers tables. Updates worker's average rating. \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{7} & \texttt{complaints} & Complaint Management Form & Stores complaints filed by users and workers:
+\begin{itemize}
+\item complainant (\textbf{FK $\rightarrow$ users.\_id})
+\item complainantRole (user/worker), jobId (\textbf{FK $\rightarrow$ bookings.\_id})
+\item complaintType (payment\_issue/service\_quality/no\_show/etc)
+\item description, status (pending/in\_review/resolved/rejected)
+\item adminNotes, resolvedBy (\textbf{FK $\rightarrow$ users.\_id}), resolvedAt
+\end{itemize}
+Related to users and bookings tables. Admin resolution workflow with status tracking. \\
+\hline
+
+\textbf{8} & \texttt{deletionlogs} & Account Deletion Management Form & Audit trail for deleted user accounts:
+\begin{itemize}
+\item deletedUserId (ObjectId), accountHolderName, email
+\item role (user/worker/admin), reason (required)
+\item deletedBy (\textbf{FK $\rightarrow$ users.\_id}), deletedAt (timestamp)
+\item additionalInfo (optional notes)
+\end{itemize}
+Maintains compliance and audit records. References admin who performed deletion. \\
+\hline
+\end{longtable}
+
+\vspace{0.5cm}
+\begin{table}[H]
+\centering
+\fbox{\begin{minipage}{0.95\textwidth}
+\textbf{Note on Key Constraints:} All tables implement referential integrity using MongoDB ObjectId references with Schema-level validation. The relationships are enforced through:
+\begin{itemize}
+\item \texttt{ref} attribute in Schema definitions for foreign key relationships
+\item \texttt{populate()} methods for JOIN-like operations
+\item Application-level cascading operations for data consistency
+\item Compound indexes on foreign key fields for optimized queries
+\item Unique constraints on critical fields (email, phone, userId in workers)
+\end{itemize}
+For example, deleting a user triggers checks on related bookings and worker profiles, ensuring referential integrity through application-level transaction handling.
+\end{minipage}}
+\end{table}
+
+\newpage
+\section*{Form Details}
+
+\subsection*{Form Name: Booking Management Form}
+
+\subsubsection*{Description of Form}
+
+\begin{table}[H]
+\centering
+\fbox{\begin{minipage}{0.95\textwidth}
+\vspace{0.3cm}
+The Booking Management Form is a comprehensive interface for managing service bookings in the Udhyogapay platform. It implements all CRUD operations with confirmation dialogs and real-time grid updates using Material-UI DataGrid component.
+\vspace{0.3cm}
+\end{minipage}}
+\end{table}
+
+\subsubsection*{Form Controls (Minimum 7 Required - 13 Implemented)}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.8}
+\begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}p{1cm}|p{4.5cm}|p{3cm}|X|}
+\hline
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{S.No}} & \textcolor{white}{\textbf{Control Name}} & \textcolor{white}{\textbf{Control Type}} & \textcolor{white}{\textbf{Purpose/Description}} \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{1} & Booking ID & Text Input (Read-Only) & Primary key for searching and identifying bookings. Auto-generated MongoDB ObjectId. \\
+\hline
+
+\textbf{2} & User Selection & Dropdown/Autocomplete & Select customer from users list with real-time search. Displays name, email, and phone. \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{3} & Worker Selection & Dropdown/Autocomplete & Select worker from available workers. Shows profession, rating, and availability status. \\
+\hline
+
+\textbf{4} & Profession & Dropdown (Enum) & Select service type: Plumber, Electrician, Carpenter, Painter, Cleaner \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{5} & Description & Text Area (Multi-line) & Detailed description of work requirements (max 500 characters) \\
+\hline
+
+\textbf{6} & Location Address & Text Input & Service location address with Google Maps autocomplete integration \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{7} & Location Coordinates & Map Picker/Coordinate Input & Interactive map for selecting longitude and latitude. Displays pin on OpenStreetMap. \\
+\hline
+
+\textbf{8} & Status & Dropdown (Enum) & Booking status: Pending, Accepted, Rejected, Started, Completed, Cancelled \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{9} & Payment Method & Radio Button Group & Three options: Cash, Online, UPI with icons \\
+\hline
+
+\textbf{10} & Payment Status & Dropdown & Payment state: Pending, Paid, Failed \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{11} & Pricing & Number Input (Currency) & Calculated service pricing in ₹ (Rupees). Auto-calculated as ₹100 + ₹50/km \\
+\hline
+
+\textbf{12} & Estimated Distance & Number Display & Distance in kilometers between user and worker location \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{13} & Estimated Time & Number Display & Estimated arrival time in minutes calculated via route API \\
+\hline
+\end{tabularx}
+\end{table}
+
+\vspace{0.5cm}
+\begin{table}[H]
+\centering
+\fbox{\begin{minipage}{0.95\textwidth}
+\textbf{Important Implementation Details:}
+\begin{itemize}
+\item All Insert, Update, and Delete operations display confirmation dialogs with OK/Cancel buttons before executing backend API calls
+\item The form includes a real-time data grid displaying all bookings with filtering, sorting, and pagination capabilities
+\item Grid automatically updates after each CRUD operation without page refresh
+\item Search textbox allows filtering by Booking ID (Primary Key) with instant results
+\item Material-UI DataGrid component provides professional table rendering with export options
+\end{itemize}
+\end{minipage}}
+\end{table}
+
+\newpage
+\subsubsection*{Screenshots}
+
+\paragraph{Insert Operation}
+\begin{figure}[H]
+\centering
+\setlength{\fboxsep}{3pt}
+\setlength{\fboxrule}{2pt}
+\fbox{\includegraphics[width=0.88\textwidth]{figure-1.png}}
+\caption{\textbf{Insert Operation - Create New Booking Form}}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\fbox{\begin{minipage}{0.9\textwidth}
+\textbf{Verification Checklist for Insert Operation:}
+\begin{itemize}
+\item[$\Box$] All 7+ form controls (13 total) are visible and functional
+\item[$\Box$] OK/Cancel confirmation dialog appears before backend submission
+\item[$\Box$] Form validation displays error messages for invalid inputs
+\item[$\Box$] Grid view updates automatically after successful insert
+\item[$\Box$] New booking appears at the top of the grid with highlighted row
+\item[$\Box$] Success toast notification displays booking ID
+\end{itemize}
+\end{minipage}}
+\end{table}
+
+\paragraph{Delete Operation}
+\begin{figure}[H]
+\centering
+\setlength{\fboxsep}{3pt}
+\setlength{\fboxrule}{2pt}
+\fbox{\includegraphics[width=0.88\textwidth]{figure-2.png}}
+\caption{\textbf{Delete Operation - Cancel Booking with Confirmation}}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\fbox{\begin{minipage}{0.9\textwidth}
+\textbf{Verification Checklist for Delete Operation:}
+\begin{itemize}
+\item[$\Box$] Confirmation prompt with clear "OK" and "Cancel" buttons
+\item[$\Box$] Warning message displays booking details to be deleted
+\item[$\Box$] Grid removes deleted record immediately upon confirmation
+\item[$\Box$] Soft delete implementation preserving data integrity
+\item[$\Box$] Related data (messages, timeline) maintained in database
+\item[$\Box$] Status changes to "Cancelled" instead of hard delete
+\end{itemize}
+\end{minipage}}
+\end{table}
+
+\newpage
+\paragraph{Update Operation}
+\begin{figure}[H]
+\centering
+\setlength{\fboxsep}{3pt}
+\setlength{\fboxrule}{2pt}
+\fbox{\includegraphics[width=0.88\textwidth]{figure-3.png}}
+\caption{\textbf{Update Operation - Modify Booking Status and Details}}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\fbox{\begin{minipage}{0.9\textwidth}
+\textbf{Verification Checklist for Update Operation:}
+\begin{itemize}
+\item[$\Box$] Form pre-populates with existing booking data
+\item[$\Box$] OK/Cancel confirmation dialog before saving changes
+\item[$\Box$] Validation ensures data integrity during updates
+\item[$\Box$] Grid reflects updated values immediately after confirmation
+\item[$\Box$] Modified fields highlight in different color
+\item[$\Box$] Timeline tracks update history with timestamps
+\end{itemize}
+\end{minipage}}
+\end{table}
+
+\paragraph{Search Operation}
+\begin{figure}[H]
+\centering
+\setlength{\fboxsep}{3pt}
+\setlength{\fboxrule}{2pt}
+\fbox{\includegraphics[width=0.88\textwidth]{figure-4.png}}
+\caption{\textbf{Search Operation - Filter by Booking ID (Primary Key)}}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\fbox{\begin{minipage}{0.9\textwidth}
+\textbf{Verification Checklist for Search Operation:}
+\begin{itemize}
+\item[$\Box$] Dedicated search textbox prominently visible at top
+\item[$\Box$] Real-time filtering as user types booking ID
+\item[$\Box$] Grid updates dynamically showing matching results only
+\item[$\Box$] Support for partial search (searches by substring)
+\item[$\Box$] Multiple search criteria available (ID, Status, User, Worker)
+\item[$\Box$] Clear button to reset search and show all records
+\end{itemize}
+\end{minipage}}
+\end{table}
+
+\newpage
+\paragraph{Display Operation}
+\begin{figure}[H]
+\centering
+\setlength{\fboxsep}{3pt}
+\setlength{\fboxrule}{2pt}
+\fbox{\includegraphics[width=0.88\textwidth]{figure-5.png}}
+\caption{\textbf{Display Operation - Complete Grid View with All Bookings}}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\fbox{\begin{minipage}{0.9\textwidth}
+\textbf{Verification Checklist for Display Operation:}
+\begin{itemize}
+\item[$\Box$] Material-UI DataGrid implementation with professional styling
+\item[$\Box$] All CRUD operations immediately reflected in grid
+\item[$\Box$] Nested table data visible (User name, email; Worker name, profession)
+\item[$\Box$] Sortable columns (click header to sort ascending/descending)
+\item[$\Box$] Pagination controls (10/25/50/100 rows per page)
+\item[$\Box$] Row actions: View Details, Edit, Delete icons
+\item[$\Box$] Expandable rows showing complete booking details
+\item[$\Box$] Export buttons for CSV and Excel formats
+\item[$\Box$] Column visibility toggle for customization
+\item[$\Box$] Responsive design adapting to screen size
+\end{itemize}
+\end{minipage}}
+\end{table}
+
+\newpage
+\section*{Technical Implementation Details}
+
+\subsection*{API Endpoints}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.8}
+\begin{tabularx}{\textwidth}{|p{2cm}|p{5.5cm}|X|}
+\hline
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{Method}} & \textcolor{white}{\textbf{Endpoint}} & \textcolor{white}{\textbf{Description}} \\
+\hline
+\rowcolor{lightgray}
+POST & \texttt{/api/bookings/create} & Insert new booking with validation and OTP generation \\
+\hline
+GET & \texttt{/api/bookings/} & Display all bookings with pagination support \\
+\hline
+\rowcolor{lightgray}
+GET & \texttt{/api/bookings/:id} & Search and retrieve booking by ID (Primary Key) \\
+\hline
+PATCH & \texttt{/api/bookings/:id/update} & Update booking details with state validation \\
+\hline
+\rowcolor{lightgray}
+DELETE & \texttt{/api/bookings/:id/cancel} & Soft delete - Cancel booking maintaining history \\
+\hline
+GET & \texttt{/api/bookings/user/:userId} & Get all bookings for specific user \\
+\hline
+\rowcolor{lightgray}
+GET & \texttt{/api/bookings/worker/:workerId} & Get all bookings assigned to worker \\
+\hline
+PATCH & \texttt{/api/bookings/:id/accept} & Worker accepts booking request \\
+\hline
+\rowcolor{lightgray}
+PATCH & \texttt{/api/bookings/:id/start} & Start work with OTP verification \\
+\hline
+PATCH & \texttt{/api/bookings/:id/complete} & Complete booking and process payment \\
+\hline
+\end{tabularx}
+\end{table}
+
+\subsection*{Database Schema Constraints}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{2.0}
+\begin{tabularx}{\textwidth}{|p{4cm}|X|}
+\hline
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{Constraint Type}} & \textcolor{white}{\textbf{Implementation Details}} \\
+\hline
+\rowcolor{lightgray}
+\textbf{Primary Key} & \texttt{\_id}: MongoDB ObjectId (Auto-generated, Unique, Indexed) \\
+\hline
+\textbf{Foreign Keys} & 
+\textbullet~\texttt{user} references \texttt{users.\_id} (ObjectId, Required, Indexed) \newline
+\textbullet~\texttt{worker} references \texttt{workers.\_id} (ObjectId, Required, Indexed) \\
+\hline
+\rowcolor{lightgray}
+\textbf{Indexed Fields} & 
+\texttt{user}, \texttt{worker}, \texttt{status}, \texttt{createdAt}, \texttt{paymentStatus} \newline
+Compound index: \texttt{\{user: 1, status: 1\}} for user booking queries \\
+\hline
+\textbf{Enum Constraints} & 
+\textbullet~\texttt{profession}: ['plumber', 'electrician', 'carpenter', 'painter', 'cleaner'] \newline
+\textbullet~\texttt{status}: ['pending', 'accepted', 'rejected', 'started', 'completed', 'cancelled'] \newline
+\textbullet~\texttt{paymentMethod}: ['cash', 'online', 'upi'] \newline
+\textbullet~\texttt{paymentStatus}: ['pending', 'paid', 'failed'] \\
+\hline
+\rowcolor{lightgray}
+\textbf{Geospatial Index} & \texttt{location.coordinates}: 2dsphere index for location-based queries and radius searches \\
+\hline
+\textbf{Validation Rules} & 
+\textbullet~Coordinates must be valid [longitude, latitude] \newline
+\textbullet~Longitude: -180 to 180, Latitude: -90 to 90 \newline
+\textbullet~OTP: 6-digit numeric string \newline
+\textbullet~Pricing: Non-negative number \\
+\hline
+\end{tabularx}
+\end{table}
+
+\newpage
+\subsection*{Form Validations}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.8}
+\begin{tabularx}{\textwidth}{|p{4.5cm}|X|}
+\hline
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{Field}} & \textcolor{white}{\textbf{Validation Rules}} \\
+\hline
+\rowcolor{lightgray}
+\textbf{User ID} & Required, Must exist in users collection, Must have role 'user' \\
+\hline
+\textbf{Worker ID} & Required, Must exist in workers collection, Worker must be verified and online \\
+\hline
+\rowcolor{lightgray}
+\textbf{Profession} & Required, Must be one of enumerated values (case-insensitive) \\
+\hline
+\textbf{Description} & Optional, Maximum 500 characters, Sanitized for XSS prevention \\
+\hline
+\rowcolor{lightgray}
+\textbf{Location Coordinates} & Required, Array of 2 numbers [longitude, latitude], Valid geographical range \\
+\hline
+\textbf{Location Address} & Optional, Auto-fetched via reverse geocoding if not provided \\
+\hline
+\rowcolor{lightgray}
+\textbf{Pricing} & Auto-calculated, Formula: ₹100 (base) + ₹50 × distance (km), Non-editable by user \\
+\hline
+\textbf{OTP} & Auto-generated, 6-digit random number, Expires after booking completion \\
+\hline
+\rowcolor{lightgray}
+\textbf{Status Transitions} & Enforced state machine: \newline pending $\rightarrow$ accepted $\rightarrow$ started $\rightarrow$ completed \newline Any state $\rightarrow$ cancelled (if not completed) \\
+\hline
+\textbf{Payment Method} & Required, One of: cash, online, upi \\
+\hline
+\rowcolor{lightgray}
+\textbf{Payment Status} & Default: 'pending', Auto-updated on payment gateway callback \\
+\hline
+\end{tabularx}
+\end{table}
+
+\subsection*{Grid Features (Material-UI DataGrid)}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{\textwidth}{|p{4cm}|X|}
+\hline
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{Feature}} & \textcolor{white}{\textbf{Implementation}} \\
+\hline
+\rowcolor{lightgray}
+\textbf{Component Library} & Material-UI DataGrid (\texttt{@mui/x-data-grid}) with premium features \\
+\hline
+\textbf{Sortable Columns} & Click column header to sort ascending/descending, Multi-column sort with Shift+Click \\
+\hline
+\rowcolor{lightgray}
+\textbf{Pagination} & Configurable rows per page: 10, 25, 50, 100. Server-side pagination for large datasets \\
+\hline
+\textbf{Real-time Updates} & Socket.IO integration for live updates. New bookings appear without refresh \\
+\hline
+\rowcolor{lightgray}
+\textbf{Row Actions} & Inline buttons: View Details (eye icon), Edit (pencil icon), Delete (trash icon) \\
+\hline
+\textbf{Nested Data Display} & Expandable rows showing complete booking details, user info, and worker profile \\
+\hline
+\rowcolor{lightgray}
+\textbf{Export Functionality} & Export to CSV and Excel formats using \texttt{xlsx} library \\
+\hline
+\textbf{Column Customization} & Show/hide columns, Reorder columns via drag-and-drop, Resize column widths \\
+\hline
+\rowcolor{lightgray}
+\textbf{Filtering} & Advanced filter panel with multiple conditions, Date range filters for timeline \\
+\hline
+\textbf{Selection} & Checkbox selection for bulk operations, Select all with header checkbox \\
+\hline
+\rowcolor{lightgray}
+\textbf{Responsive Design} & Mobile-friendly layout, Horizontal scroll on small screens, Collapsible columns \\
+\hline
+\textbf{Styling} & Custom theme matching application branding, Hover effects and row striping \\
+\hline
+\end{tabularx}
+\end{table}
+
+\newpage
+\section*{Requirements Compliance Checklist}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{2.2}
+\begin{tabularx}{\textwidth}{|p{1cm}|p{10cm}|p{2cm}|}
+\hline
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{S.No}} & \textcolor{white}{\textbf{Requirement}} & \textcolor{white}{\textbf{Status}} \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{1} & \textbf{Minimum Seven Controls:} The form must have at least 7 controls. & \textcolor{green}{\textbf{✓ PASS}} \newline (13 controls implemented) \\
+\hline
+
+\textbf{2} & \textbf{Not Login/Authentication Related:} The form should not be related to login or authentication functionality. & \textcolor{green}{\textbf{✓ PASS}} \newline (Booking Management module) \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{3} & \textbf{OK/Cancel Confirmations:} All Insert, Update, and Delete operations should display confirmation dialogs with OK/Cancel buttons before backend execution. & \textcolor{green}{\textbf{✓ PASS}} \newline (Implemented for all operations) \\
+\hline
+
+\textbf{4} & \textbf{Grid View Display:} The form should display data in a grid view using Material-UI Grid component. & \textcolor{green}{\textbf{✓ PASS}} \newline (Material-UI DataGrid used) \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{5} & \textbf{Primary Key Search:} There should be a textbox to search for contents based on the primary key. & \textcolor{green}{\textbf{✓ PASS}} \newline (Search by Booking ID) \\
+\hline
+
+\textbf{6} & \textbf{CRUD in Grid:} All CRUD operations (Create, Read, Update, Delete) should be reflected in the grid immediately. & \textcolor{green}{\textbf{✓ PASS}} \newline (Real-time grid updates) \\
+\hline
+
+\rowcolor{lightgray}
+\textbf{7} & \textbf{Nested Table Operations:} The table should have nested operations with other tables using key constraints. & \textcolor{green}{\textbf{✓ PASS}} \newline (Foreign keys to users and workers tables) \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section*{Module Summary}
+
+\begin{table}[H]
+\centering
+\fbox{\begin{minipage}{0.95\textwidth}
+\vspace{0.3cm}
+\subsection*{Booking Management System - Key Achievements}
+
+\textbf{Forms Implemented:} 6 comprehensive forms with full CRUD operations
+
+\textbf{Database Tables:} 8 interconnected tables with proper foreign key relationships
+\begin{itemize}
+\item \texttt{bookings} (main table)
+\item \texttt{users} (parent table)
+\item \texttt{workers} (linked via userId)
+\item \texttt{messages} (communication tracking)
+\item \texttt{workerapplications} (registration workflow)
+\item \texttt{reviews} (ratings and feedback with good attributes and improvement suggestions)
+\item \texttt{complaints} (user/worker complaint management and resolution)
+\item \texttt{deletionlogs} (account deletion audit trail and compliance)
+\end{itemize}
+
+\textbf{Technology Stack:}
+\begin{itemize}
+\item \textbf{Backend:} Node.js, Express.js, TypeScript, MongoDB with Mongoose ODM
+\item \textbf{Frontend:} React.js, TypeScript, Material-UI, Vite
+\item \textbf{Real-time:} Socket.IO for live notifications and updates
+\item \textbf{Maps:} OpenStreetMap with Leaflet for location visualization
+\item \textbf{APIs:} OpenStreetMap Nominatim for geocoding and routing
+\end{itemize}
+
+\textbf{Key Features Delivered:}
+\begin{itemize}
+\item 13 form controls exceeding minimum requirement of 7
+\item Confirmation dialogs for all destructive operations
+\item Real-time grid updates using Material-UI DataGrid
+\item Search functionality with multiple criteria
+\item Nested data display with foreign key relationships
+\item Export capabilities (CSV/Excel)
+\item Mobile-responsive design
+\item Location-based matching and routing
+\item Distance-based pricing calculator
+\item OTP verification system
+\end{itemize}
+
+\textbf{Security Measures:}
+\begin{itemize}
+\item JWT-based authentication with 7-day expiry
+\item Password hashing using bcrypt (salt rounds: 12)
+\item Input validation and sanitization
+\item XSS prevention through escaping
+\item Rate limiting on API endpoints
+\item Role-based access control (User/Worker/Admin)
+\end{itemize}
+
+\vspace{0.3cm}
+\end{minipage}}
+\end{table}
+
+\vfill
+\begin{center}
+\rule{0.8\textwidth}{0.4pt}\\[0.3cm]
+{\Large\textbf{End of Project Document \#2}}\\[0.2cm]
+{\small Submitted by TEAM\_02\_27\_12\_2025 (1)}\\
+{\small Guide: T. Senthil Kumar}\\
+{\small Date: 1 March 2026, 11:00 PM}\\[0.2cm]
+\rule{0.8\textwidth}{0.4pt}
+\end{center}
+
+\end{document}
